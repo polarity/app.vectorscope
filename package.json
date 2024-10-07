@@ -1,0 +1,14 @@
+{
+  "name": "audio-vectorscope",
+  "version": "1.0.0",
+  "description": "Audio Vectorscope Visualization",
+  "main": "js/main.js",
+  "scripts": {
+    "start": "http-server -c-1"
+  },
+  "author": "Robert Agthe",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
