@@ -19,7 +19,7 @@ const state = {
  * Sets up the user interface and event listeners
  */
 export function setupUI() {
-  const container = document.body
+  const container = document.getElementById('vectorscope-container')
   container.innerHTML = '' // Clear existing content
 
   createVectorscopeContainer(container)
@@ -236,9 +236,6 @@ function adjustCanvasSize() {
     size = windowHeight * 0.8
     containerHeight = size
   }
-
-  container.style.width = `${size}px`
-  container.style.height = `${containerHeight}px`
 
   vectorscope.width = size
   vectorscope.height = containerHeight

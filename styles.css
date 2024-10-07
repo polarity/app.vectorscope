@@ -11,7 +11,10 @@ body {
   padding: 20px;
   box-sizing: border-box;
 }
-
+a, a:link, a:visited, a:hover, a:active {
+  color: #ccc;
+ 
+}
 #vectorscope-container {
   position: relative;
   width: 100%;
@@ -36,7 +39,6 @@ body {
   align-items: center;
   gap: 20px;
   width: 100%;
-  max-width: 600px;
 }
 
 #controls button,
