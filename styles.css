@@ -21,7 +21,6 @@ a, a:link, a:visited, a:hover, a:active {
   aspect-ratio: 1 / 1;
   margin-bottom: 20px;
 }
-
 #vectorscope,
 #vectorscope-overlay {
   position: absolute;
