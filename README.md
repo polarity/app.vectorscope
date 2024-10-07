@@ -64,11 +64,12 @@ audio-vectorscope/
 ├── styles.css
 ├── js/
 │   ├── main.js
+│   ├── vectorscope.js
+│   ├── utils.js
 │   ├── audio.js
 │   ├── ui.js
 │   └── overlay.js
 ├── package.json
-├── .cursorrules
 ├── README.md
 └── LICENSE
 ```
