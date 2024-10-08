@@ -1,5 +1,6 @@
 import { startAnalyzing, updateAudioInputs } from './audio.js'
 import { drawOverlay } from './overlay.js'
+import { calculateRMS } from './utils.js'
 
 let gainNode
 let vuMeterLeft
@@ -274,16 +275,6 @@ export function updateVUMeter(dataArrayLeft, dataArrayRight) {
   vuMeterRight.style.setProperty('--level', `${dbToPercentage(20 * Math.log10(rmsRight))}%`)
   vuMeterMid.style.setProperty('--level', `${dbToPercentage(20 * Math.log10(rmsMid))}%`)
   vuMeterSide.style.setProperty('--level', `${dbToPercentage(20 * Math.log10(rmsSide))}%`)
-}
-
-/**
- * Calculates the Root Mean Square (RMS) of an array of audio samples
- * @param {Float32Array} samples - Array of audio samples
- * @returns {number} The RMS value
- */
-function calculateRMS(samples) {
-  const sum = samples.reduce((acc, val) => acc + val * val, 0)
-  return Math.sqrt(sum / samples.length)
 }
 
 export function getVectorscope() {
