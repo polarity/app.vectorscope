@@ -7,16 +7,15 @@ import { getFrequencyColor } from './utils.js'
  * @param {Float32Array} dataArrayRight - Time domain data for the right channel
  * @param {Uint8Array} frequencyDataLeft - Frequency data for the left channel
  * @param {Uint8Array} frequencyDataRight - Frequency data for the right channel
- * @param {Object} colors - The colors for the background
  */
-export function drawVectorscope(dataArrayLeft, dataArrayRight, frequencyDataLeft, frequencyDataRight, colors) {
+export function drawVectorscope(dataArrayLeft, dataArrayRight, frequencyDataLeft, frequencyDataRight) {
   const vectorscope = getVectorscope()
   const canvasCtx = vectorscope.getContext('2d')
   const width = canvasCtx.canvas.width
   const height = canvasCtx.canvas.height
 
   // Apply a semi-transparent fill to create a motion blur effect
-  canvasCtx.fillStyle = `rgba(0, 0, 0, 0.1)` // Adjust alpha for more or less blur
+  canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.1)' // Fixed background color
   canvasCtx.fillRect(0, 0, width, height)
 
   canvasCtx.lineWidth = 2

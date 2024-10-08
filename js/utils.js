@@ -1,20 +1,4 @@
 /**
- * Gets the current theme colors based on user selection
- * @returns {Object} The background color
- */
-export function getThemeColors() {
-  const theme = document.getElementById('colorTheme').value
-  switch (theme) {
-    case 'dark':
-      return { background: 'black' }
-    case 'light':
-      return { background: 'white' }
-    default: // 'classic'
-      return { background: 'black' }
-  }
-}
-
-/**
  * Generates a color for a given frequency using a rainbow gradient
  * @param {number} frequency - The frequency in Hz
  * @param {number} minFreq - The minimum frequency of the range (e.g., 20Hz)

@@ -1,36 +1,54 @@
 import { drawVectorscope } from './vectorscope.js'
-import { updateVUMeter, setGainNode } from './ui.js'
-import { getThemeColors } from './utils.js'
+import { updateVUMeter, setGainNode, createAudioInputSelect, showStartButton } from './ui.js'
+
+let audioContext
+let currentStream
 
 /**
  * Starts the audio analysis process
  */
-export function startAnalyzing() {
-  getAudioStream()
-    .then(stream => processAudio(stream))
-    .catch(error => {
-      console.error('Error accessing audio stream:', error)
-      alert('Failed to access audio stream. Please check your microphone settings and try again.')
-    })
+export async function startAnalyzing() {
+  if (audioContext) {
+    audioContext.close()
+  }
+  audioContext = new (window.AudioContext || window.webkitAudioContext)()
+  
+  try {
+    const stream = await getAudioStream()
+    if (currentStream) {
+      currentStream.getTracks().forEach(track => track.stop())
+    }
+    currentStream = stream
+    processAudio(stream)
+    
+    // If we successfully got the stream, we can update audio inputs
+    await updateAudioInputs()
+  } catch (error) {
+    console.error('Error accessing audio stream:', error)
+    alert('Failed to access audio stream. Please check your audio input settings and try again.')
+  }
 }
 
 /**
  * Requests access to the user's audio input
  * @returns {Promise<MediaStream>} The audio stream
  */
-function getAudioStream() {
-  return navigator.mediaDevices.getUserMedia(
-    { 
-      audio: {
-        sampleRate: 44100,
-        sampleSize: 16,
-        channelCount: 2,
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false,
-      }
+async function getAudioStream() {
+  const audioInputSelect = document.getElementById('audioInputSelect')
+  const selectedDeviceId = audioInputSelect ? audioInputSelect.value : undefined
+
+  console.log('Requesting audio stream')
+  return navigator.mediaDevices.getUserMedia({ 
+    audio: {
+      deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,
+      sampleRate: 44100,
+      sampleSize: 16,
+      channelCount: 2,
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
     }
-  )
+  })
 }
 
 /**
@@ -38,7 +56,6 @@ function getAudioStream() {
  * @param {MediaStream} stream - The audio stream
  */
 function processAudio(stream) {
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)()
   const source = audioContext.createMediaStreamSource(stream)
 
   // Create and connect the gain node
@@ -86,11 +103,22 @@ function processAudio(stream) {
     analyserLeft.getByteFrequencyData(frequencyDataLeft)
     analyserRight.getByteFrequencyData(frequencyDataRight)
 
-    const colors = getThemeColors()
-
-    drawVectorscope(dataArrayLeft, dataArrayRight, frequencyDataLeft, frequencyDataRight, colors)
+    drawVectorscope(dataArrayLeft, dataArrayRight, frequencyDataLeft, frequencyDataRight)
     updateVUMeter(dataArrayLeft, dataArrayRight)
   }
 
   draw()
+}
+
+/**
+ * Updates the list of available audio inputs
+ */
+export async function updateAudioInputs() {
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices()
+    const audioInputs = devices.filter(device => device.kind === 'audioinput')
+    createAudioInputSelect(audioInputs, startAnalyzing)
+  } catch (error) {
+    console.error('Error enumerating audio devices:', error)
+  }
 }

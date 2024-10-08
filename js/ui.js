@@ -1,4 +1,4 @@
-import { startAnalyzing } from './audio.js'
+import { startAnalyzing, updateAudioInputs } from './audio.js'
 import { drawOverlay } from './overlay.js'
 
 let gainNode
@@ -11,7 +11,6 @@ let vectorscopeOverlay
 
 const state = {
   gain: 1,
-  colorTheme: 'default',
   blur: 0
 }
 
@@ -28,6 +27,17 @@ export function setupUI() {
 
   handleResize()
   window.addEventListener('resize', handleResize)
+
+  // Show the start button initially
+  showStartButton()
+
+  // Listen for device changes and update the audio input list
+  navigator.mediaDevices.addEventListener('devicechange', () => {
+    // Only update audio inputs if we have already started analyzing
+    if (document.getElementById('audioInputSelect')) {
+      updateAudioInputs()
+    }
+  })
 }
 
 /**
@@ -52,9 +62,12 @@ function createControls(parent) {
 
   createVUMeters(controls)
   createGainControl(controls)
-  createStartButton(controls)
-  createColorThemeSelect(controls)
   createBlurSlider(controls)
+  createStartButton(controls)
+  
+  // Create a placeholder for the audio input select
+  const audioInputPlaceholder = createElement('div', { id: 'audioInputPlaceholder' })
+  controls.appendChild(audioInputPlaceholder)
 
   parent.appendChild(controls)
 }
@@ -125,53 +138,32 @@ function createStartButton(parent) {
 }
 
 /**
- * Creates the color theme select element
- * @param {HTMLElement} parent - The parent element to append to
- */
-function createColorThemeSelect(parent) {
-  const colorTheme = createElement('select', { id: 'colorTheme' })
-  const themes = [
-    { value: 'default', text: 'Default Theme' },
-    { value: 'dark', text: 'Dark Theme' },
-    { value: 'light', text: 'Light Theme' }
-  ]
-
-  themes.forEach(theme => {
-    const option = createElement('option', { value: theme.value, textContent: theme.text })
-    colorTheme.appendChild(option)
-  })
-
-  colorTheme.value = state.colorTheme
-  colorTheme.addEventListener('change', (e) => {
-    state.colorTheme = e.target.value
-    changeColorTheme()
-  })
-
-  parent.appendChild(colorTheme)
-}
-
-/**
  * Creates the blur slider
  * @param {HTMLElement} parent - The parent element to append to
  */
 function createBlurSlider(parent) {
+  const blurControl = createElement('div', { class: 'blur-control' })
+  blurControl.appendChild(createElement('label', { for: 'blurSlider', textContent: 'Blur:' }))
   const blurSlider = createElement('input', { 
     type: 'range', 
     id: 'blurSlider', 
     min: 0, 
     max: 100, 
+    step: 1,
     value: state.blur 
   })
-  const blurLabel = createElement('label', { for: 'blurSlider', textContent: 'Blur' })
+  const blurValue = createElement('span', { id: 'blurValue', textContent: state.blur.toFixed(0) })
 
   blurSlider.addEventListener('input', (e) => {
-    const blurAmount = parseFloat(e.target.value)
+    const blurAmount = parseInt(e.target.value)
     state.blur = blurAmount
-    vectorscope.style.filter = `blur(${blurAmount / 100}px)`
+    blurValue.textContent = blurAmount.toFixed(0)
+    vectorscope.style.filter = `blur(${blurAmount / 10}px)`
   })
 
-  parent.appendChild(blurSlider)
-  parent.appendChild(blurLabel)
+  blurControl.appendChild(blurSlider)
+  blurControl.appendChild(blurValue)
+  parent.appendChild(blurControl)
 }
 
 /**
@@ -246,14 +238,6 @@ function adjustCanvasSize() {
 }
 
 /**
- * Changes the color theme of the vectorscope
- */
-function changeColorTheme() {
-  // The color change is handled during the draw loop via getThemeColors
-  // This function can be expanded to update other UI elements if needed
-}
-
-/**
  * Updates the VU meter display
  * @param {Float32Array} dataArrayLeft - Time domain data for the left channel
  * @param {Float32Array} dataArrayRight - Time domain data for the right channel
@@ -308,4 +292,66 @@ export function getVectorscope() {
 
 export function getVectorscopeOverlay() {
   return vectorscopeOverlay
+}
+
+/**
+ * Creates the audio input selection dropdown
+ * @param {MediaDeviceInfo[]} audioInputs - List of available audio input devices
+ * @param {function} onSelect - Callback function when a device is selected
+ */
+export function createAudioInputSelect(audioInputs, onSelect) {
+  let select = document.getElementById('audioInputSelect')
+  const startButton = document.getElementById('startButton')
+  const placeholder = document.getElementById('audioInputPlaceholder')
+  
+  if (!select) {
+    select = createElement('select', { id: 'audioInputSelect' })
+    const label = createElement('label', { for: 'audioInputSelect', textContent: 'Audio Input: ' })
+    
+    if (placeholder) {
+      placeholder.appendChild(label)
+      placeholder.appendChild(select)
+    } else {
+      console.warn('Audio input placeholder not found')
+      const container = document.getElementById('controls')
+      if (container) {
+        container.appendChild(label)
+        container.appendChild(select)
+      }
+    }
+  }
+
+  // Clear existing options
+  select.innerHTML = ''
+
+  // Add default option
+  const defaultOption = createElement('option', { value: '', textContent: 'Default' })
+  select.appendChild(defaultOption)
+
+  // Add options for each audio input
+  audioInputs.forEach(input => {
+    const option = createElement('option', {
+      value: input.deviceId,
+      textContent: input.label || `(${input.deviceId.slice(0, 5)}...)`
+    })
+    select.appendChild(option)
+  })
+
+  select.addEventListener('change', () => {
+    onSelect()
+  })
+
+  // Show the audio input select and hide the start button
+  select.style.display = 'block'
+  if (startButton) startButton.style.display = 'none'
+}
+
+/**
+ * Shows the start button and hides the audio input select
+ */
+export function showStartButton() {
+  const startButton = document.getElementById('startButton')
+  const audioInputSelect = document.getElementById('audioInputSelect')
+  if (startButton) startButton.style.display = 'block'
+  if (audioInputSelect) audioInputSelect.style.display = 'none'
 }

@@ -111,3 +111,24 @@ a, a:link, a:visited, a:hover, a:active {
   gap: 10px;
   width: 100%;
 }
+
+.blur-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#blurSlider {
+  width: 150px;
+}
+
+#blurValue {
+  min-width: 30px;
+}
+
+#audioInputPlaceholder {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+

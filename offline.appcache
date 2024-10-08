@@ -1,0 +1,19 @@
+CACHE MANIFEST
+# Version 1.0
+
+CACHE:
+index.html
+# Add other HTML, CSS, and JavaScript files here
+# For example:
+# styles/main.css
+# scripts/app.js
+
+# Add any image files used in your app
+# images/logo.png
+
+NETWORK:
+*
+
+FALLBACK:
+# Optionally, specify fallback resources for when the user is offline
+# / offline.html
