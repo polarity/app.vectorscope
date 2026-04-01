@@ -13,9 +13,9 @@ This file gives coding agents a project-specific guide for `app.vectorscope`.
 - `index.html`: Entry document, metadata, root mount node (`#vectorscope-app`), module bootstrap.
 - `styles.css`: Application styling and layout.
 - `js/main.js`: App bootstrap (`setupUI`, resize listener).
-- `js/ui.js`: DOM creation, UI controls, app state, resize handling, VU meter updates, audio input selector UI.
+- `js/ui.js`: DOM creation, UI controls, app state, resize handling, VU meter updates, and audio input selector UI.
 - `js/audio.js`: Web Audio setup, media stream access, analyzers, animation loop hook.
-- `js/vectorscope.js`: Main vectorscope drawing routine.
+- `js/vectorscope.js`: Main vectorscope drawing routine, including temporal smoothing state for the trace.
 - `js/overlay.js`: Static overlay guides and labels.
 - `js/theme.js`: Shared theme helpers for reading CSS tokens from JavaScript.
 - `js/utils.js`: Shared helpers such as RMS calculation.
@@ -57,7 +57,7 @@ This file gives coding agents a project-specific guide for `app.vectorscope`.
    - Audio input selection updates after access is granted
    - Vectorscope trace updates in real time
    - L/R/M/S VU meters react to incoming signal
-   - Gain and blur controls affect output
+   - Gain and smoothing controls affect output
    - Canvas scales correctly on resize
 
 ## Known Constraints

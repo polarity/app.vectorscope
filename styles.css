@@ -210,7 +210,7 @@ input[type='range']:focus-visible {
 }
 
 .gain-control,
-.blur-control,
+.smoothing-control,
 #audioInputPlaceholder {
   display: grid;
   grid-template-columns: minmax(112px, 132px) minmax(0, 1fr) auto;
@@ -266,12 +266,12 @@ input[type='range']:focus-visible {
 }
 
 #gainSlider,
-#blurSlider {
+#smoothingSlider {
   width: 100%;
 }
 
 #gainValue,
-#blurValue {
+#smoothingValue {
   min-width: 36px;
   color: var(--color-text);
   font-variant-numeric: tabular-nums;
@@ -305,13 +305,13 @@ footer {
   }
 
   .gain-control,
-  .blur-control,
+  .smoothing-control,
   #audioInputPlaceholder {
     grid-template-columns: 1fr;
   }
 
   #gainValue,
-  #blurValue {
+  #smoothingValue {
     text-align: left;
   }
 }

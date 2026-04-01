@@ -8,9 +8,9 @@ Try it on the web: [Demo](https://vectorscope.polarity.me)
 
 - Real-time stereo vectorscope rendering on canvas
 - Frequency-reactive trace coloring driven by shared theme tokens
+- Temporal smoothing control for a steadier vectorscope trace
 - VU meters for L/R/M/S channels
 - Input gain control
-- Blur control for the vectorscope trace
 - Audio input device selection after permission is granted
 - Responsive layout with a square vectorscope area
 
@@ -52,7 +52,7 @@ Try it on the web: [Demo](https://vectorscope.polarity.me)
 1. Open the app in your browser.
 2. Click `Start Analyzing`.
 3. Allow microphone access when prompted.
-4. Use `Input Gain` and `Blur` to shape the visualization.
+4. Use `Input Gain` and `Smoothing` to shape the visualization.
 5. If multiple devices are available, choose one from the `Audio Input` selector.
 6. Monitor stereo image and phase using the vectorscope trace and L/R/M/S meters.
 

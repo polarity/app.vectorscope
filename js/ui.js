@@ -13,7 +13,7 @@ let vectorscopeOverlay
 
 const state = {
   gain: 1,
-  blur: 0
+  smoothing: 0
 }
 
 /**
@@ -65,7 +65,7 @@ function createControls(parent) {
 
   createVUMeters(controls)
   createGainControl(controls)
-  createBlurSlider(controls)
+  createSmoothingSlider(controls)
   createStartButton(controls)
   
   // Create a placeholder for the audio input select
@@ -141,32 +141,31 @@ function createStartButton(parent) {
 }
 
 /**
- * Creates the blur slider
+ * Creates the smoothing slider
  * @param {HTMLElement} parent - The parent element to append to
  */
-function createBlurSlider(parent) {
-  const blurControl = createElement('div', { class: 'blur-control' })
-  blurControl.appendChild(createElement('label', { for: 'blurSlider', textContent: 'Blur:' }))
-  const blurSlider = createElement('input', { 
+function createSmoothingSlider(parent) {
+  const smoothingControl = createElement('div', { class: 'smoothing-control' })
+  smoothingControl.appendChild(createElement('label', { for: 'smoothingSlider', textContent: 'Smoothing:' }))
+  const smoothingSlider = createElement('input', { 
     type: 'range', 
-    id: 'blurSlider', 
+    id: 'smoothingSlider', 
     min: 0, 
     max: 100, 
     step: 1,
-    value: state.blur 
+    value: state.smoothing 
   })
-  const blurValue = createElement('span', { id: 'blurValue', textContent: state.blur.toFixed(0) })
+  const smoothingValue = createElement('span', { id: 'smoothingValue', textContent: state.smoothing.toFixed(0) })
 
-  blurSlider.addEventListener('input', (e) => {
-    const blurAmount = parseInt(e.target.value)
-    state.blur = blurAmount
-    blurValue.textContent = blurAmount.toFixed(0)
-    vectorscope.style.filter = `blur(${blurAmount / 10}px)`
+  smoothingSlider.addEventListener('input', (e) => {
+    const smoothingAmount = parseInt(e.target.value)
+    state.smoothing = smoothingAmount
+    smoothingValue.textContent = smoothingAmount.toFixed(0)
   })
 
-  blurControl.appendChild(blurSlider)
-  blurControl.appendChild(blurValue)
-  parent.appendChild(blurControl)
+  smoothingControl.appendChild(smoothingSlider)
+  smoothingControl.appendChild(smoothingValue)
+  parent.appendChild(smoothingControl)
 }
 
 /**
@@ -280,6 +279,14 @@ export function getVectorscope() {
 
 export function getVectorscopeOverlay() {
   return vectorscopeOverlay
+}
+
+/**
+ * Returns the current temporal smoothing amount
+ * @returns {number} Smoothing value from 0 to 100
+ */
+export function getSmoothingAmount() {
+  return state.smoothing
 }
 
 /**

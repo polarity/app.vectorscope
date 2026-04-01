@@ -1,5 +1,5 @@
-import { drawVectorscope } from './vectorscope.js'
-import { updateVUMeter, setGainNode, createAudioInputSelect, showStartButton } from './ui.js'
+import { drawVectorscope, resetVectorscopeState } from './vectorscope.js'
+import { updateVUMeter, setGainNode, createAudioInputSelect, showStartButton, getSmoothingAmount } from './ui.js'
 
 let audioContext
 let currentStream
@@ -19,6 +19,7 @@ export async function startAnalyzing() {
       currentStream.getTracks().forEach(track => track.stop())
     }
     currentStream = stream
+    resetVectorscopeState()
     processAudio(stream)
     
     // If we successfully got the stream, we can update audio inputs
@@ -104,7 +105,13 @@ function processAudio(stream) {
     analyserLeft.getByteFrequencyData(frequencyDataLeft)
     analyserRight.getByteFrequencyData(frequencyDataRight)
 
-    drawVectorscope(dataArrayLeft, dataArrayRight, frequencyDataLeft, frequencyDataRight)
+    drawVectorscope(
+      dataArrayLeft,
+      dataArrayRight,
+      frequencyDataLeft,
+      frequencyDataRight,
+      getSmoothingAmount()
+    )
     updateVUMeter(dataArrayLeft, dataArrayRight)
   }
 

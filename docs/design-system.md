@@ -14,6 +14,7 @@ This project uses a single shared dark theme with cyan-blue accents across DOM U
 - Canvas modules must not duplicate the palette in JavaScript.
 - Read CSS custom properties through `js/theme.js` so overlay lines, labels, fade fills, and trace colors match the stylesheet.
 - If the theme changes, update the CSS custom properties first and only extend `js/theme.js` when a new token must be read from JS.
+- Temporal smoothing belongs in the renderer and audio-visualization path, not as a CSS blur filter on the finished canvas.
 
 ## UI Rules
 
