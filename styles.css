@@ -104,6 +104,8 @@ input[type='range']:focus-visible {
 }
 
 #vectorscope-app {
+  display: grid;
+  gap: 16px;
   width: min(920px, 100%);
 }
 
@@ -111,7 +113,6 @@ input[type='range']:focus-visible {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  margin-bottom: 20px;
   overflow: hidden;
   background:
     radial-gradient(circle at center, var(--color-scope-glow), transparent 60%),
@@ -134,15 +135,94 @@ input[type='range']:focus-visible {
   pointer-events: none;
 }
 
-#controls {
+.panel-stack {
   display: grid;
-  gap: 16px;
-  width: 100%;
-  padding: 20px;
+  gap: 14px;
+}
+
+#controls,
+#controls-content,
+.surface-panel {
+  padding: 18px;
   background: linear-gradient(180deg, var(--color-surface-overlay-top), var(--color-surface-overlay-bottom));
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-surface);
+}
+
+#controls {
+  display: grid;
+  gap: 16px;
+}
+
+.controls-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+#controls button,
+#audio-input-field select {
+  min-height: 46px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+#controls button {
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(180deg, var(--color-accent-hover), var(--color-accent));
+  color: var(--color-button-text);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+  box-shadow: 0 10px 24px var(--color-accent-shadow);
+}
+
+#controls button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+#controls button:active {
+  transform: translateY(0);
+}
+
+#audio-input-field {
+  display: grid;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+#audio-input-field label,
+.control-group label,
+.vu-meter-label {
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+#audio-input-field label {
+  font-size: 13px;
+}
+
+#audio-input-field select {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+#controls-content {
+  display: none;
+  gap: 12px;
+}
+
+#controls-content.visible {
+  display: grid;
 }
 
 .vu-meter-group {
@@ -165,9 +245,7 @@ input[type='range']:focus-visible {
 
 .vu-meter-label {
   width: 18px;
-  color: var(--color-text-muted);
   font-size: 12px;
-  font-weight: 700;
   letter-spacing: 0.12em;
   text-align: center;
 }
@@ -209,79 +287,49 @@ input[type='range']:focus-visible {
   --meter-color: var(--color-meter-side);
 }
 
-.gain-control,
-.smoothing-control,
-#audioInputPlaceholder {
+.control-group {
   display: grid;
-  grid-template-columns: minmax(112px, 132px) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(150px, 220px) minmax(0, 1fr) auto;
+  gap: 14px;
   align-items: center;
-  gap: 12px;
-  width: 100%;
-}
-
-#audioInputPlaceholder {
-  display: none;
-}
-
-#audioInputPlaceholder.is-visible {
-  display: grid;
-}
-
-#controls label {
-  color: var(--color-text-muted);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-#controls button,
-#controls select {
-  min-height: 44px;
-  padding: 10px 14px;
+  padding: 14px 16px;
+  background: var(--color-surface-strong);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
 }
 
-#controls button {
-  background: linear-gradient(180deg, var(--color-accent-hover), var(--color-accent));
-  color: var(--color-button-text);
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
-  box-shadow: 0 10px 24px var(--color-accent-shadow);
+.control-group label {
+  min-width: 0;
+  font-size: 14px;
 }
 
-#controls button:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.04);
-}
-
-#controls button:active {
-  transform: translateY(0);
-}
-
-#controls select {
+.control-group input[type='range'] {
   width: 100%;
-  background: var(--color-surface-soft);
-  color: var(--color-text);
+  margin: 0;
 }
 
-#gainSlider,
-#smoothingSlider {
-  width: 100%;
-}
-
-#gainValue,
-#smoothingValue {
-  min-width: 36px;
+.control-value {
+  min-width: 64px;
   color: var(--color-text);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
+.is-hidden {
+  display: none !important;
+}
+
+.surface-panel--copy {
+  display: grid;
+  gap: 8px;
+}
+
+.surface-panel--copy p,
+footer {
+  margin: 0;
+}
+
 #instructions {
-  width: min(920px, 100%);
-  margin: 20px auto 0;
-  padding: 0 6px;
   color: var(--color-text-muted);
   font-size: 14px;
   text-align: center;
@@ -290,6 +338,7 @@ input[type='range']:focus-visible {
 footer {
   width: min(920px, 100%);
   margin-top: 18px;
+  padding: 4px 10px 10px;
   color: var(--color-text-muted);
   font-size: 14px;
   text-align: center;
@@ -300,18 +349,19 @@ footer {
     padding: 16px;
   }
 
-  #controls {
+  #controls,
+  #controls-content,
+  .surface-panel {
     padding: 16px;
   }
 
-  .gain-control,
-  .smoothing-control,
-  #audioInputPlaceholder {
+  .control-group,
+  #audio-input-field {
     grid-template-columns: 1fr;
   }
 
-  #gainValue,
-  #smoothingValue {
+  .control-value,
+  #instructions {
     text-align: left;
   }
 }

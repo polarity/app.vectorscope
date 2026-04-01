@@ -61,18 +61,24 @@ function createVectorscopeContainer(parent) {
  * @param {HTMLElement} parent - The parent element to append to
  */
 function createControls(parent) {
+  const panelStack = createElement('div', { class: 'panel-stack' })
   const controls = createElement('div', { id: 'controls' })
+  const controlsActions = createElement('div', { class: 'controls-actions' })
+  const controlsContent = createElement('div', { id: 'controls-content' })
 
+  createStartButton(controlsActions)
+  createControlsToggle(controlsActions)
+  createAudioInputField(controlsActions)
+
+  controls.appendChild(controlsActions)
   createVUMeters(controls)
-  createGainControl(controls)
-  createSmoothingSlider(controls)
-  createStartButton(controls)
-  
-  // Create a placeholder for the audio input select
-  const audioInputPlaceholder = createElement('div', { id: 'audioInputPlaceholder' })
-  controls.appendChild(audioInputPlaceholder)
 
-  parent.appendChild(controls)
+  createGainControl(controlsContent)
+  createSmoothingSlider(controlsContent)
+
+  panelStack.appendChild(controls)
+  panelStack.appendChild(controlsContent)
+  parent.appendChild(panelStack)
 }
 
 /**
@@ -104,7 +110,7 @@ function createVUMeters(parent) {
  * @param {HTMLElement} parent - The parent element to append to
  */
 function createGainControl(parent) {
-  const gainControl = createElement('div', { class: 'gain-control' })
+  const gainControl = createElement('div', { class: 'control-group' })
   gainControl.appendChild(createElement('label', { for: 'gainSlider', textContent: 'Input Gain:' }))
   const gainSlider = createElement('input', { 
     type: 'range', 
@@ -114,7 +120,11 @@ function createGainControl(parent) {
     step: 0.1, 
     value: state.gain 
   })
-  const gainValue = createElement('span', { id: 'gainValue', textContent: state.gain.toFixed(1) })
+  const gainValue = createElement('span', {
+    id: 'gainValue',
+    class: 'control-value',
+    textContent: state.gain.toFixed(1)
+  })
 
   gainSlider.addEventListener('input', (e) => {
     const gain = parseFloat(e.target.value)
@@ -141,11 +151,43 @@ function createStartButton(parent) {
 }
 
 /**
+ * Creates the controls toggle button
+ * @param {HTMLElement} parent - The parent element to append to
+ */
+function createControlsToggle(parent) {
+  const toggleButton = createElement('button', {
+    id: 'controls-toggle',
+    textContent: 'Show Controls',
+    'aria-expanded': 'false',
+    'aria-controls': 'controls-content'
+  })
+
+  toggleButton.addEventListener('click', () => {
+    const controlsContent = document.getElementById('controls-content')
+    const isVisible = controlsContent.classList.toggle('visible')
+    syncControlsToggleState(isVisible)
+  })
+
+  parent.appendChild(toggleButton)
+}
+
+/**
+ * Creates the audio input field
+ * @param {HTMLElement} parent - The parent element to append to
+ */
+function createAudioInputField(parent) {
+  const audioInputField = createElement('div', { id: 'audio-input-field', class: 'is-hidden' })
+  audioInputField.appendChild(createElement('label', { for: 'audioInputSelect', textContent: 'Audio Input' }))
+  audioInputField.appendChild(createElement('select', { id: 'audioInputSelect' }))
+  parent.appendChild(audioInputField)
+}
+
+/**
  * Creates the smoothing slider
  * @param {HTMLElement} parent - The parent element to append to
  */
 function createSmoothingSlider(parent) {
-  const smoothingControl = createElement('div', { class: 'smoothing-control' })
+  const smoothingControl = createElement('div', { class: 'control-group' })
   smoothingControl.appendChild(createElement('label', { for: 'smoothingSlider', textContent: 'Smoothing:' }))
   const smoothingSlider = createElement('input', { 
     type: 'range', 
@@ -155,7 +197,11 @@ function createSmoothingSlider(parent) {
     step: 1,
     value: state.smoothing 
   })
-  const smoothingValue = createElement('span', { id: 'smoothingValue', textContent: state.smoothing.toFixed(0) })
+  const smoothingValue = createElement('span', {
+    id: 'smoothingValue',
+    class: 'control-value',
+    textContent: state.smoothing.toFixed(0)
+  })
 
   smoothingSlider.addEventListener('input', (e) => {
     const smoothingAmount = parseInt(e.target.value)
@@ -173,7 +219,7 @@ function createSmoothingSlider(parent) {
  * @param {HTMLElement} parent - The parent element to append to
  */
 function createInstructions(parent) {
-  const instructions = createElement('div', { id: 'instructions' })
+  const instructions = createElement('div', { id: 'instructions', class: 'surface-panel surface-panel--copy' })
   instructions.appendChild(createElement('p', { 
     textContent: 'How to read the vectorscope: The horizontal axis represents the left channel, and the vertical axis represents the right channel. The center point is silence, while the corners represent maximum amplitude in both channels. The shape and movement of the trace indicate the stereo image and phase relationship of the audio signal.' 
   }))
@@ -297,24 +343,11 @@ export function getSmoothingAmount() {
  */
 export function createAudioInputSelect(audioInputs, selectedDeviceId, onSelect) {
   let select = document.getElementById('audioInputSelect')
-  const startButton = document.getElementById('startButton')
-  const placeholder = document.getElementById('audioInputPlaceholder')
-  
-  if (!select) {
-    select = createElement('select', { id: 'audioInputSelect' })
-    const label = createElement('label', { for: 'audioInputSelect', textContent: 'Audio Input: ' })
-    
-    if (placeholder) {
-      placeholder.appendChild(label)
-      placeholder.appendChild(select)
-    } else {
-      console.warn('Audio input placeholder not found')
-      const container = document.getElementById('controls')
-      if (container) {
-        container.appendChild(label)
-        container.appendChild(select)
-      }
-    }
+  const audioInputField = document.getElementById('audio-input-field')
+
+  if (!select || !audioInputField) {
+    console.warn('Audio input field not found')
+    return
   }
 
   // Clear existing options
@@ -342,10 +375,7 @@ export function createAudioInputSelect(audioInputs, selectedDeviceId, onSelect) 
     onSelect(select.value)
   }
 
-  // Show the audio input select and hide the start button
-  select.style.display = 'block'
-  if (startButton) startButton.style.display = 'none'
-  if (placeholder) placeholder.classList.add('is-visible')
+  audioInputField.classList.remove('is-hidden')
 }
 
 /**
@@ -353,9 +383,21 @@ export function createAudioInputSelect(audioInputs, selectedDeviceId, onSelect) 
  */
 export function showStartButton() {
   const startButton = document.getElementById('startButton')
-  const audioInputSelect = document.getElementById('audioInputSelect')
-  const placeholder = document.getElementById('audioInputPlaceholder')
+  const audioInputField = document.getElementById('audio-input-field')
   if (startButton) startButton.style.display = 'block'
-  if (audioInputSelect) audioInputSelect.style.display = 'none'
-  if (placeholder) placeholder.classList.remove('is-visible')
+  if (audioInputField) audioInputField.classList.add('is-hidden')
+}
+
+/**
+ * Synchronizes the controls toggle button label and aria state
+ * @param {boolean} isVisible - Whether the drawer is visible
+ */
+function syncControlsToggleState(isVisible) {
+  const toggleButton = document.getElementById('controls-toggle')
+  if (!toggleButton) {
+    return
+  }
+
+  toggleButton.textContent = isVisible ? 'Hide Controls' : 'Show Controls'
+  toggleButton.setAttribute('aria-expanded', String(isVisible))
 }
