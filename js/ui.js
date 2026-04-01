@@ -1,5 +1,6 @@
 import { startAnalyzing, updateAudioInputs } from './audio.js'
 import { drawOverlay } from './overlay.js'
+import { resetThemeCache } from './theme.js'
 import { calculateRMS } from './utils.js'
 
 let gainNode
@@ -21,6 +22,7 @@ const state = {
 export function setupUI() {
   const container = document.getElementById('vectorscope-app')
   container.innerHTML = '' // Clear existing content
+  resetThemeCache()
 
   createVectorscopeContainer(container)
   createControls(container)
@@ -244,11 +246,6 @@ function adjustCanvasSize() {
  * @param {Float32Array} dataArrayRight - Time domain data for the right channel
  */
 export function updateVUMeter(dataArrayLeft, dataArrayRight) {
-  const vuMeterLeft = document.getElementById('vu-meter-left')
-  const vuMeterRight = document.getElementById('vu-meter-right')
-  const vuMeterMid = document.getElementById('vu-meter-mid')
-  const vuMeterSide = document.getElementById('vu-meter-side')
-
   if (!vuMeterLeft || !vuMeterRight || !vuMeterMid || !vuMeterSide) {
     console.warn('VU meter elements not found. Skipping update.')
     return
@@ -328,13 +325,14 @@ export function createAudioInputSelect(audioInputs, onSelect) {
     select.appendChild(option)
   })
 
-  select.addEventListener('change', () => {
+  select.onchange = () => {
     onSelect()
-  })
+  }
 
   // Show the audio input select and hide the start button
   select.style.display = 'block'
   if (startButton) startButton.style.display = 'none'
+  if (placeholder) placeholder.classList.add('is-visible')
 }
 
 /**
@@ -343,6 +341,8 @@ export function createAudioInputSelect(audioInputs, onSelect) {
 export function showStartButton() {
   const startButton = document.getElementById('startButton')
   const audioInputSelect = document.getElementById('audioInputSelect')
+  const placeholder = document.getElementById('audioInputPlaceholder')
   if (startButton) startButton.style.display = 'block'
   if (audioInputSelect) audioInputSelect.style.display = 'none'
+  if (placeholder) placeholder.classList.remove('is-visible')
 }

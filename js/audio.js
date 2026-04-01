@@ -25,6 +25,7 @@ export async function startAnalyzing() {
     await updateAudioInputs()
   } catch (error) {
     console.error('Error accessing audio stream:', error)
+    showStartButton()
     alert('Failed to access audio stream. Please check your audio input settings and try again.')
   }
 }

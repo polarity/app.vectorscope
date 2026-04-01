@@ -1,4 +1,5 @@
 import { getVectorscopeOverlay } from './ui.js'
+import { getTheme } from './theme.js'
 
 /**
  * Draws the overlay with guides on the vectorscope
@@ -8,9 +9,11 @@ export function drawOverlay() {
   const ctx = vectorscopeOverlay.getContext('2d')
   const width = vectorscopeOverlay.width
   const height = vectorscopeOverlay.height
+  const theme = getTheme()
+  const fontSize = Math.max(12, width / 50)
 
   ctx.clearRect(0, 0, width, height)
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'
+  ctx.strokeStyle = theme.overlayStroke
   ctx.lineWidth = 1
 
   // Draw diagonal lines
@@ -30,8 +33,8 @@ export function drawOverlay() {
   })
 
   // Draw labels
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'
-  ctx.font = `${width / 50}px Arial`
+  ctx.fillStyle = theme.overlayText
+  ctx.font = `${fontSize}px ${theme.fontFamily}`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   

@@ -1,100 +1,103 @@
 # Audio Vectorscope
-Try it out [on the web: Demo](https://vectorscope.polarity.me)
 
-## Description
-Audio Vectorscope is a web-based application that provides real-time visualization of audio signals using a vectorscope display. It's built with modern vanilla JavaScript, HTML, and CSS, showcasing best practices in modular development without relying on external libraries.
+Audio Vectorscope is a browser-based stereo audio visualizer built with vanilla HTML, CSS, and JavaScript modules. It captures live microphone input, renders a real-time vectorscope on canvas, and displays VU meters for Left, Right, Mid, and Side channels.
 
-A vectorscope is a specialized oscilloscope used in audio applications. Unlike a traditional oscilloscope, which plots signal versus time, a vectorscope shows an X-Y plot of two signals to reveal their relationship. In this application, it displays the relationship between the left and right channels of a stereo audio signal.
+Try it on the web: [Demo](https://vectorscope.polarity.me)
 
 ## Features
 
-- Real-time audio visualization using a vectorscope display
-- VU meters for Left, Right, Mid, and Side channels
-- Adjustable input gain
-- Customizable color themes (Default, Dark, Light)
-- Blur effect control for the vectorscope display
-- Responsive design that maintains a 1:1 aspect ratio
-- Modular code structure for better maintainability
-- Adherence to StandardJS linting rules
+- Real-time stereo vectorscope rendering on canvas
+- Frequency-reactive trace coloring driven by shared theme tokens
+- VU meters for L/R/M/S channels
+- Input gain control
+- Blur control for the vectorscope trace
+- Audio input device selection after permission is granted
+- Responsive layout with a square vectorscope area
 
 ## Requirements
 
-- A modern web browser (Chrome, Firefox, Safari, Edge)
-- Node.js and npm (for development and running the local server)
+- A modern browser with Web Audio support (Chrome, Firefox, Safari, Edge)
+- Node.js and npm for the local development server
 
 ## Installation
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/audio-vectorscope.git
+1. Clone this repository:
+
+   ```bash
+   git clone <your-repo-url>
    ```
 
-2. Navigate to the project directory:
-   ```
-   cd audio-vectorscope
+2. Move into the project directory:
+
+   ```bash
+   cd app.vectorscope
    ```
 
 3. Install dependencies:
-   ```
+
+   ```bash
    npm install
    ```
 
-4. Start the local development server:
-   ```
+4. Start the local server:
+
+   ```bash
    npm start
    ```
 
-5. Open your web browser and visit `http://localhost:8080` (or the port specified by http-server).
+5. Open the local URL printed by `http-server` (typically `http://localhost:8080`).
 
 ## Usage
 
-1. Once the application is loaded in your browser, you'll see the vectorscope display and controls.
-2. Click the "Start Analyzing" button to begin audio analysis.
-3. Grant microphone permissions when prompted by your browser.
-4. Adjust the input gain using the slider if needed.
-5. Experiment with different color themes and blur effects using the provided controls.
-6. Observe the VU meters and vectorscope display to analyze your audio signal.
+1. Open the app in your browser.
+2. Click `Start Analyzing`.
+3. Allow microphone access when prompted.
+4. Use `Input Gain` and `Blur` to shape the visualization.
+5. If multiple devices are available, choose one from the `Audio Input` selector.
+6. Monitor stereo image and phase using the vectorscope trace and L/R/M/S meters.
+
+## Theme And Styling
+
+- Visual tokens live in `styles.css` as CSS custom properties for background, surfaces, borders, text, links, overlay colors, trace colors, and VU meter colors.
+- Canvas-based rendering reads the same CSS variables through `js/theme.js`, so the DOM and the canvas stay in sync.
+- New color or typography changes should update the shared tokens first instead of adding new hard-coded values in JS or CSS.
+- Additional design notes live in [`docs/design-system.md`](docs/design-system.md).
 
 ## Project Structure
 
+```text
+app.vectorscope/
+|- index.html
+|- styles.css
+|- js/
+|  |- main.js
+|  |- ui.js
+|  |- audio.js
+|  |- vectorscope.js
+|  |- overlay.js
+|  |- theme.js
+|  `- utils.js
+|- docs/
+|  `- design-system.md
+|- .github/
+|  `- instructions/
+|     |- javascript.instructions.md
+|     |- css.instructions.md
+|     |- html.instructions.md
+|     `- markdown.instructions.md
+|- README.md
+`- LICENSE
 ```
-audio-vectorscope/
-│
-├── index.html
-├── styles.css
-├── js/
-│   ├── main.js
-│   ├── vectorscope.js
-│   ├── utils.js
-│   ├── audio.js
-│   ├── ui.js
-│   └── overlay.js
-├── package.json
-├── README.md
-└── LICENSE
-```
 
-## Development Guidelines
+## Development
 
-- Use modern vanilla JavaScript (ES6+)
-- Follow StandardJS linting rules
-- Use 2 spaces for indentation
-- Omit semicolons at the end of statements (as per StandardJS)
-- Create modular, encapsulated functions
-- Use clear naming conventions
-- Write comprehensive JSDoc comments for all functions
-- Separate concerns by using multiple files for different functionalities
-
-## Contributing
-
-Contributions to the Audio Vectorscope project are welcome. Please ensure your code adheres to the project's coding standards and passes all linting checks.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- Keep the app framework-free unless there is an explicit decision to change stack.
+- Follow StandardJS style: 2 spaces, no semicolons.
+- Keep UI code in `js/ui.js`, audio setup in `js/audio.js`, canvas drawing in `js/vectorscope.js` and `js/overlay.js`, and shared theme access in `js/theme.js`.
+- Maintain JSDoc on exported functions and non-obvious logic.
+- Keep `README.md`, `agents.md`, and the `.github/instructions/` files aligned with the actual behavior of the app.
+- There is currently no automated test suite; verify behavior manually in the browser.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
