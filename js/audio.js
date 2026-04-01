@@ -3,11 +3,17 @@ import { updateVUMeter, setGainNode, createAudioInputSelect, showStartButton, ge
 
 let audioContext
 let currentStream
+let selectedAudioInputId = ''
 
 /**
  * Starts the audio analysis process
+ * @param {string} [deviceId] - Requested audio input device id
  */
-export async function startAnalyzing() {
+export async function startAnalyzing(deviceId) {
+  if (typeof deviceId === 'string') {
+    selectedAudioInputId = deviceId
+  }
+
   if (audioContext) {
     audioContext.close()
   }
@@ -23,7 +29,7 @@ export async function startAnalyzing() {
     processAudio(stream)
     
     // If we successfully got the stream, we can update audio inputs
-    await updateAudioInputs()
+    await updateAudioInputs(stream)
   } catch (error) {
     console.error('Error accessing audio stream:', error)
     showStartButton()
@@ -36,20 +42,9 @@ export async function startAnalyzing() {
  * @returns {Promise<MediaStream>} The audio stream
  */
 async function getAudioStream() {
-  const audioInputSelect = document.getElementById('audioInputSelect')
-  const selectedDeviceId = audioInputSelect ? audioInputSelect.value : undefined
-
   console.log('Requesting audio stream')
-  return navigator.mediaDevices.getUserMedia({ 
-    audio: {
-      deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,
-      sampleRate: 44100,
-      sampleSize: 16,
-      channelCount: 2,
-      echoCancellation: false,
-      noiseSuppression: false,
-      autoGainControl: false,
-    }
+  return navigator.mediaDevices.getUserMedia({
+    audio: getAudioConstraints()
   })
 }
 
@@ -120,13 +115,68 @@ function processAudio(stream) {
 
 /**
  * Updates the list of available audio inputs
+ * @param {MediaStream} [stream] - Current active audio stream
  */
-export async function updateAudioInputs() {
+export async function updateAudioInputs(stream = currentStream) {
   try {
     const devices = await navigator.mediaDevices.enumerateDevices()
     const audioInputs = devices.filter(device => device.kind === 'audioinput')
-    createAudioInputSelect(audioInputs, startAnalyzing)
+    selectedAudioInputId = resolveSelectedAudioInputId(audioInputs, stream)
+    createAudioInputSelect(audioInputs, selectedAudioInputId, handleAudioInputChange)
   } catch (error) {
     console.error('Error enumerating audio devices:', error)
   }
+}
+
+/**
+ * Handles audio input selection changes from the UI
+ * @param {string} deviceId - Selected audio input device id
+ */
+function handleAudioInputChange(deviceId) {
+  startAnalyzing(deviceId)
+}
+
+/**
+ * Returns getUserMedia audio constraints for the selected device
+ * @returns {MediaTrackConstraints} Audio constraints
+ */
+function getAudioConstraints() {
+  const constraints = {
+    sampleRate: 44100,
+    sampleSize: 16,
+    channelCount: 2,
+    echoCancellation: false,
+    noiseSuppression: false,
+    autoGainControl: false
+  }
+
+  if (selectedAudioInputId) {
+    constraints.deviceId = { exact: selectedAudioInputId }
+  }
+
+  return constraints
+}
+
+/**
+ * Resolves which device id should be shown as selected in the UI
+ * @param {MediaDeviceInfo[]} audioInputs - Available audio input devices
+ * @param {MediaStream} [stream] - Current active audio stream
+ * @returns {string} The selected device id or empty string for default
+ */
+function resolveSelectedAudioInputId(audioInputs, stream) {
+  const availableDeviceIds = new Set(audioInputs.map(input => input.deviceId))
+  const activeTrack = stream ? stream.getAudioTracks()[0] : null
+  const activeDeviceId = activeTrack && activeTrack.getSettings
+    ? activeTrack.getSettings().deviceId
+    : ''
+
+  if (activeDeviceId && availableDeviceIds.has(activeDeviceId)) {
+    return activeDeviceId
+  }
+
+  if (selectedAudioInputId && availableDeviceIds.has(selectedAudioInputId)) {
+    return selectedAudioInputId
+  }
+
+  return ''
 }

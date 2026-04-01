@@ -136,7 +136,7 @@ function createGainControl(parent) {
  */
 function createStartButton(parent) {
   const startButton = createElement('button', { id: 'startButton', textContent: 'Start Analyzing' })
-  startButton.addEventListener('click', startAnalyzing)
+  startButton.addEventListener('click', () => startAnalyzing())
   parent.appendChild(startButton)
 }
 
@@ -292,9 +292,10 @@ export function getSmoothingAmount() {
 /**
  * Creates the audio input selection dropdown
  * @param {MediaDeviceInfo[]} audioInputs - List of available audio input devices
+ * @param {string} selectedDeviceId - Currently selected device id
  * @param {function} onSelect - Callback function when a device is selected
  */
-export function createAudioInputSelect(audioInputs, onSelect) {
+export function createAudioInputSelect(audioInputs, selectedDeviceId, onSelect) {
   let select = document.getElementById('audioInputSelect')
   const startButton = document.getElementById('startButton')
   const placeholder = document.getElementById('audioInputPlaceholder')
@@ -332,8 +333,13 @@ export function createAudioInputSelect(audioInputs, onSelect) {
     select.appendChild(option)
   })
 
+  select.value = selectedDeviceId || ''
+  if (select.value !== (selectedDeviceId || '')) {
+    select.value = ''
+  }
+
   select.onchange = () => {
-    onSelect()
+    onSelect(select.value)
   }
 
   // Show the audio input select and hide the start button

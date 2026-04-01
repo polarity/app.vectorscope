@@ -11,7 +11,7 @@ Try it on the web: [Demo](https://vectorscope.polarity.me)
 - Temporal smoothing control for a steadier vectorscope trace
 - VU meters for L/R/M/S channels
 - Input gain control
-- Audio input device selection after permission is granted
+- Audio input device selection after permission is granted, with selection preserved across refreshes
 - Responsive layout with a square vectorscope area
 
 ## Requirements
@@ -53,7 +53,7 @@ Try it on the web: [Demo](https://vectorscope.polarity.me)
 2. Click `Start Analyzing`.
 3. Allow microphone access when prompted.
 4. Use `Input Gain` and `Smoothing` to shape the visualization.
-5. If multiple devices are available, choose one from the `Audio Input` selector.
+5. If multiple devices are available, choose one from the `Audio Input` selector. The selected device stays visible after the stream restarts.
 6. Monitor stereo image and phase using the vectorscope trace and L/R/M/S meters.
 
 ## Theme And Styling
